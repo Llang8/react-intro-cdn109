@@ -1,34 +1,22 @@
-import { useState } from 'react'
-import Counter from '../components/Counter';
+import { useEffect, useState } from "react";
+import Post from '../components/Post'
 
 export default function Home() {
-    const [counters, setCounters] = useState([
-        {
-            title: "Pushup Counter",
-            initialCount: 10,
-        },
-        {
-            title: "Situp Counter",
-            initialCount: 5,
-        },
-        {
-            title: "Squat Counter",
-            initialCount: 40123,
-        },
-        {
-            title: "Laps Run",
-            initialCount: 315,
-        },
-    ]);
+    const [posts, setPosts] = useState([])
+    console.log(posts)
+    useEffect(() => {
+        async function getPosts() {
+            const response = await fetch('https://cdn109-fakebook.onrender.com/api/posts')
+            const data = await response.json()
+            setPosts(data)
+        }
+        getPosts()
+    }, [])
 
     return (
-        <div className="App">
-            {counters.map((counter) => (
-                <Counter
-                    title={counter.title}
-                    initialCount={counter.initialCount}
-                />
-            ))}
+        <div>
+            <h1>Home</h1>
+            { posts.map((post) => <Post post={post} key={post.id} />) }
         </div>
-    );
+    )
 }
