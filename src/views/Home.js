@@ -1,18 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Post from '../components/Post'
+import { DataContext } from '../contexts/DataProvider'
 
 export default function Home() {
-    const [posts, setPosts] = useState([])
-    console.log(posts)
-    useEffect(() => {
-        async function getPosts() {
-            const response = await fetch('https://cdn109-fakebook.onrender.com/api/posts')
-            const data = await response.json()
-            setPosts(data)
-        }
-        getPosts()
-    }, [])
-
+    const { posts } = useContext(DataContext)
     return (
         <div>
             <h1>Home</h1>
