@@ -4,8 +4,9 @@ export default function Post(props) {
     return (
         <div className="post">
             <p>{props.post.body}</p>
-            <p>{props.post.date_created}</p>
+            <p>{props.post.dateCreated?.toDate().toString()}</p> {/* Optional Chaining! */}
             <p>Posted By: {props.post.username}</p>
+            
             {
                 (props.hideLink) ?
                 <></> :
