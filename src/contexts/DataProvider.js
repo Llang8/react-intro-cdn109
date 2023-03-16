@@ -1,19 +1,22 @@
 import { useState, useEffect, createContext, useContext } from 'react'
-import { getFirestore, getDocs, collection, doc, getDoc } from '@firebase/firestore'
-
+import { getFirestore, getDocs, collection, doc, getDoc, addDoc, Timestamp, collectionGroup, query } from '@firebase/firestore'
+import { AuthContext } from './AuthProvider'
 export const DataContext = createContext()
 
 export const DataProvider = function(props) {
     const [posts, setPosts] = useState([])
+    const { user } = useContext(AuthContext)
     const db = getFirestore()
     console.log(posts)
     useEffect(() => {
         async function getPosts() {
-            const querySnapshot = await getDocs(collection(db, 'posts'))
+            const postQuery = query(collectionGroup(db, 'posts'))
+            const querySnapshot = await getDocs(postQuery)
             const loadedPosts = []
             querySnapshot.forEach((doc) => {
                 loadedPosts.push({
                     id: doc.id,
+                    uid: doc.ref.parent.parent.id,
                     ...doc.data()
                 })
             })
@@ -22,9 +25,9 @@ export const DataProvider = function(props) {
         getPosts()
     }, [])
 
-    async function getPost(id) {
+    async function getPost(uid, id) {
         // Get a reference to our document
-        const docRef = doc(db, 'posts', id)
+        const docRef = doc(db, 'users', uid, 'posts', id)
 
         // Get a snapshot of information based on our reference
         const docSnap = await getDoc(docRef)
@@ -43,11 +46,32 @@ export const DataProvider = function(props) {
         return data
     } 
 
+    async function addPost(title, body) {
+        const newPost = {
+            title, // shorthand for title: title
+            body,
+            dateCreated: Timestamp.now(),
+            username: user.displayName
+        }
+
+        const docRef = await addDoc(collection(db, 'users', user.uid, 'posts'), newPost)
+
+        newPost.id = docRef.id
+
+        setPosts([
+            newPost,
+            ...posts
+        ])
+
+        return newPost
+    }
+
     const value = {
         // title: title is equivalent to:
         posts,
         getPost,
-        getPokemonData
+        getPokemonData,
+        addPost
     }
 
     return (

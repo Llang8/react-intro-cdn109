@@ -4,7 +4,7 @@ import Post from '../components/Post'
 import { DataContext } from '../contexts/DataProvider'
 
 export default function PostSingle() {
-    const { id } = useParams()
+    const { id, uid } = useParams()
     const [post, setPost] = useState({})
     const [error, setError] = useState(false)
     const { getPost } = useContext(DataContext)
@@ -12,7 +12,7 @@ export default function PostSingle() {
     useEffect(() => {
         async function handleLoad() {
             try {
-                const data = await getPost(id)
+                const data = await getPost(uid, id)
                 setPost(data)
             } catch(err) {
                 setError(true)

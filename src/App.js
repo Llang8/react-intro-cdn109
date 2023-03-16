@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import { useState } from 'react'
+import { useContext } from 'react'
 import { BrowserRouter, 
   Routes, 
   Route, 
@@ -11,8 +11,11 @@ import About from './views/About'
 import Contact from './views/Contact'
 import Pokemon from './views/Pokemon'
 import PostSingle from './views/PostSingle'
+import { AuthContext } from './contexts/AuthProvider'
 
 function App() {
+  const { login, user, logout } = useContext(AuthContext)
+  console.log(user)
   return (
     <BrowserRouter>
       <nav>
@@ -31,9 +34,19 @@ function App() {
           </li>
         </ul>
       </nav>
+      <div>
+        {
+          (user.loggedIn) ?
+          <>
+            <button onClick={logout}>Logout</button>
+            <p>Current User: {user.displayName}</p>
+          </> :
+          <button onClick={login}>Login</button>
+        }
+      </div>
 
       <Routes>
-        <Route path="/post/:id" element={<PostSingle />} />
+        <Route path="/post/:uid/:id" element={<PostSingle />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="/pokemon" element={<Pokemon />} />
